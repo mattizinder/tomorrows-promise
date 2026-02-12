@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tomorrow's Promise — Imagining Peace</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --olive: #6B7C3E; --olive-light: #8FA65D; --sand: #E8DCC8; --sand-light: #F5F0E6;
+    --terracotta: #C4704B; --sky: #7EB8D4; --sky-deep: #4A8BAF; --gold: #D4A843;
+    --night: #1A2332; --warm-white: #FAF7F2; --text: #2C2C2C; --text-light: #5A5A5A;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'DM Sans', sans-serif; color: var(--text); background: var(--warm-white); overflow-x: hidden; }
+
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 1.2rem 2rem; display: flex; justify-content: space-between; align-items: center; transition: background 0.4s, backdrop-filter 0.4s; }
+  nav.scrolled { background: rgba(250,247,242,0.92); backdrop-filter: blur(20px); box-shadow: 0 1px 15px rgba(0,0,0,0.05); }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--night); font-weight: 700; text-decoration: none; }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a { font-size: 0.85rem; color: var(--text-light); text-decoration: none; font-weight: 500; letter-spacing: 0.5px; transition: color 0.3s; }
+  .nav-links a:hover { color: var(--olive); }
+  @media (max-width: 768px) { .nav-links { display: none; } }
+
+  .hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; position: relative; overflow: hidden; background: #1a2332; }
+  .hero-bg { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 0; }
+  .hero-content { position: relative; z-index: 2; max-width: 800px; padding: 0 2rem; animation: fadeUp 1.5s ease-out; }
+  .hero-date { font-size: 0.85rem; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); margin-bottom: 1.5rem; font-weight: 500; }
+  .hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2.8rem, 7vw, 5.5rem); line-height: 1.1; color: #fff; margin-bottom: 1.5rem; font-weight: 700; }
+  .hero h1 em { color: var(--gold); font-style: italic; }
+  .hero-subtitle { font-size: clamp(1rem, 2.2vw, 1.3rem); color: rgba(255,255,255,0.75); line-height: 1.7; max-width: 600px; margin: 0 auto 2.5rem; font-weight: 300; }
+  .scroll-cta { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--gold); font-weight: 500; text-decoration: none; font-size: 0.95rem; letter-spacing: 1px; animation: float 3s ease-in-out infinite; }
+  .scroll-cta .arrow { font-size: 1.4rem; transition: transform 0.3s; }
+
+  section { padding: 6rem 2rem; max-width: 1200px; margin: 0 auto; }
+  .section-label { font-size: 0.75rem; letter-spacing: 4px; text-transform: uppercase; color: var(--terracotta); margin-bottom: 1rem; font-weight: 600; }
+  .section-title { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 4vw, 3rem); line-height: 1.2; margin-bottom: 1.5rem; color: var(--night); }
+  .section-text { font-size: 1.1rem; line-height: 1.8; color: var(--text-light); max-width: 700px; font-weight: 300; }
+
+  .contrast-section { max-width: 100%; padding: 0; margin: 0; }
+  .contrast-grid { display: grid; grid-template-columns: 1fr 1fr; min-height: 90vh; }
+  .contrast-panel { padding: 4rem 3.5rem; display: flex; flex-direction: column; justify-content: center; }
+  .contrast-panel.today { background: linear-gradient(135deg, #2C3340 0%, #1A2332 100%); color: #fff; position: relative; }
+  .contrast-panel.today .section-label { color: #E07A5F; }
+  .contrast-panel.today .section-title { color: #fff; }
+  .contrast-panel.today .section-text { color: rgba(255,255,255,0.7); }
+  .contrast-panel.today .stat-number { color: #E07A5F; }
+  .contrast-panel.today .stat-label { color: rgba(255,255,255,0.5); }
+  .contrast-panel.tomorrow { background: linear-gradient(135deg, #E8F0E0 0%, #F5F0E6 100%); }
+  .contrast-panel.tomorrow .stat-number { color: var(--olive); }
+
+  .scene-container { width: 100%; border-radius: 12px; overflow: hidden; margin-bottom: 2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.15); position: relative; }
+  .scene-container svg { width: 100%; display: block; }
+  .scene-overlay-text { position: absolute; bottom: 12px; left: 12px; font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.7); background: rgba(0,0,0,0.4); padding: 4px 10px; border-radius: 4px; }
+
+  .stats-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; margin-top: 2rem; }
+  .stat-number { font-family: 'Playfair Display', serif; font-size: 2.5rem; font-weight: 700; margin-bottom: 0.3rem; }
+  .stat-label { font-size: 0.85rem; color: var(--text-light); letter-spacing: 0.5px; line-height: 1.4; }
+
+  .scene-banner { width: 100%; max-width: 100%; overflow: hidden; position: relative; }
+  .scene-banner svg { width: 100%; display: block; }
+  .banner-caption { position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); text-align: center; color: #fff; text-shadow: 0 2px 20px rgba(0,0,0,0.5); }
+  .banner-caption h2 { font-family: 'Playfair Display', serif; font-size: clamp(1.5rem, 3vw, 2.5rem); margin-bottom: 0.5rem; }
+  .banner-caption p { font-size: 0.9rem; opacity: 0.8; font-weight: 300; }
+
+  .timeline-section { background: var(--sand-light); max-width: 100%; padding: 6rem 2rem; }
+  .timeline-inner { max-width: 900px; margin: 0 auto; }
+  .timeline { position: relative; margin-top: 3rem; }
+  .timeline::before { content: ''; position: absolute; left: 24px; top: 0; bottom: 0; width: 2px; background: linear-gradient(180deg, var(--terracotta), var(--olive), var(--sky-deep)); }
+  .timeline-item { display: flex; gap: 2.5rem; margin-bottom: 3rem; opacity: 0; transform: translateY(30px); animation: fadeUp 0.8s ease-out forwards; }
+  .timeline-item:nth-child(1) { animation-delay: 0.1s; }
+  .timeline-item:nth-child(2) { animation-delay: 0.3s; }
+  .timeline-item:nth-child(3) { animation-delay: 0.5s; }
+  .timeline-item:nth-child(4) { animation-delay: 0.7s; }
+  .timeline-item:nth-child(5) { animation-delay: 0.9s; }
+  .timeline-dot { width: 50px; min-width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; z-index: 1; }
+  .timeline-item:nth-child(1) .timeline-dot { background: #FDE8E0; }
+  .timeline-item:nth-child(2) .timeline-dot { background: #FCF0D8; }
+  .timeline-item:nth-child(3) .timeline-dot { background: #E0F0E8; }
+  .timeline-item:nth-child(4) .timeline-dot { background: #D8EAF4; }
+  .timeline-item:nth-child(5) .timeline-dot { background: #E8E0F0; }
+  .timeline-content h3 { font-family: 'Playfair Display', serif; font-size: 1.3rem; margin-bottom: 0.3rem; color: var(--night); }
+  .timeline-year { font-size: 0.8rem; font-weight: 600; color: var(--terracotta); letter-spacing: 1px; margin-bottom: 0.5rem; }
+  .timeline-content p { font-size: 0.95rem; line-height: 1.7; color: var(--text-light); font-weight: 300; }
+  .timeline-scene { width: 100%; border-radius: 10px; overflow: hidden; margin-top: 1rem; box-shadow: 0 3px 15px rgba(0,0,0,0.1); }
+  .timeline-scene svg { width: 100%; display: block; }
+
+  .stories-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 2rem; margin-top: 3rem; }
+  .story-card { background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 30px rgba(0,0,0,0.06); transition: transform 0.4s ease, box-shadow 0.4s ease; }
+  .story-card:hover { transform: translateY(-6px); box-shadow: 0 12px 40px rgba(0,0,0,0.1); }
+  .story-visual { height: 220px; position: relative; overflow: hidden; }
+  .story-visual svg { width: 100%; height: 100%; }
+  .story-body { padding: 2rem; }
+  .story-location { font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; color: var(--terracotta); font-weight: 600; margin-bottom: 0.5rem; }
+  .story-body h3 { font-family: 'Playfair Display', serif; font-size: 1.25rem; margin-bottom: 0.8rem; color: var(--night); }
+  .story-body p { font-size: 0.9rem; line-height: 1.7; color: var(--text-light); font-weight: 300; }
+
+  .map-section { background: var(--night); max-width: 100%; padding: 6rem 2rem; text-align: center; color: #fff; position: relative; overflow: hidden; }
+  .map-section .section-title { color: #fff; }
+  .map-section .section-text { color: rgba(255,255,255,0.6); margin: 0 auto 3rem; }
+  .map-visual { max-width: 900px; margin: 0 auto; }
+  .map-svg-container { width: 100%; border-radius: 16px; overflow: hidden; margin-bottom: 2rem; border: 1px solid rgba(255,255,255,0.08); }
+  .map-svg-container svg { width: 100%; display: block; }
+  .route-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2rem; }
+  .route-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 1.5rem; text-align: center; transition: background 0.3s, transform 0.3s; }
+  .route-card:hover { background: rgba(255,255,255,0.08); transform: translateY(-3px); }
+  .route-emoji { font-size: 2rem; margin-bottom: 0.8rem; }
+  .route-card h4 { font-family: 'Playfair Display', serif; font-size: 1rem; margin-bottom: 0.3rem; }
+  .route-card p { font-size: 0.8rem; color: rgba(255,255,255,0.5); line-height: 1.5; }
+  .route-time { display: inline-block; margin-top: 0.6rem; font-size: 0.7rem; letter-spacing: 1px; color: var(--gold); font-weight: 600; }
+
+  .economy-section { background: linear-gradient(180deg, var(--warm-white), var(--sand-light)); max-width: 100%; padding: 6rem 2rem; }
+  .economy-inner { max-width: 1100px; margin: 0 auto; }
+  .economy-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-top: 3rem; }
+  .econ-card { background: #fff; border-radius: 16px; padding: 2rem 1.5rem; text-align: center; box-shadow: 0 2px 20px rgba(0,0,0,0.04); transition: transform 0.3s; }
+  .econ-card:hover { transform: translateY(-4px); }
+  .econ-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+  .econ-value { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; color: var(--olive); margin-bottom: 0.3rem; }
+  .econ-label { font-size: 0.8rem; color: var(--text-light); line-height: 1.4; }
+  .econ-bar { width: 100%; height: 4px; background: var(--sand); border-radius: 2px; margin-top: 1rem; overflow: hidden; }
+  .econ-bar-fill { height: 100%; border-radius: 2px; animation: growBar 2s ease-out forwards; transform-origin: left; }
+  .econ-card:nth-child(1) .econ-bar-fill { background: var(--olive); width: 85%; }
+  .econ-card:nth-child(2) .econ-bar-fill { background: var(--sky-deep); width: 70%; }
+  .econ-card:nth-child(3) .econ-bar-fill { background: var(--gold); width: 90%; }
+  .econ-card:nth-child(4) .econ-bar-fill { background: var(--terracotta); width: 65%; }
+
+  /* GCC INTERCONNECTION */
+  .gcc-section { max-width: 100%; padding: 0; margin: 0; background: #0a1628; color: #fff; position: relative; overflow: hidden; }
+  .gcc-inner { max-width: 1200px; margin: 0 auto; padding: 6rem 2rem; }
+  .gcc-section .section-title { color: #fff; }
+  .gcc-section .section-text { color: rgba(255,255,255,0.6); }
+  .gcc-section .section-label { color: var(--gold); }
+  .gcc-hero-scene { width: 100%; border-radius: 0; overflow: hidden; margin-bottom: 3rem; }
+  .gcc-hero-scene svg { width: 100%; display: block; }
+  .gcc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 2.5rem; }
+  .gcc-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; overflow: hidden; transition: transform 0.3s, background 0.3s; }
+  .gcc-card:hover { transform: translateY(-4px); background: rgba(255,255,255,0.07); }
+  .gcc-card-visual { height: 180px; overflow: hidden; position: relative; }
+  .gcc-card-visual svg { width: 100%; height: 100%; }
+  .gcc-card-body { padding: 1.5rem; }
+  .gcc-card-body h3 { font-family: 'Playfair Display', serif; font-size: 1.1rem; margin-bottom: 0.5rem; }
+  .gcc-card-body p { font-size: 0.85rem; color: rgba(255,255,255,0.5); line-height: 1.6; }
+  .gcc-stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-top: 3rem; padding-top: 3rem; border-top: 1px solid rgba(255,255,255,0.08); }
+  .gcc-stat { text-align: center; }
+  .gcc-stat-val { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--gold); margin-bottom: 0.3rem; }
+  .gcc-stat-label { font-size: 0.75rem; color: rgba(255,255,255,0.4); line-height: 1.3; }
+  .photo-label { position: absolute; bottom: 8px; right: 8px; font-size: 0.55rem; color: rgba(255,255,255,0.5); background: rgba(0,0,0,0.5); padding: 2px 6px; border-radius: 3px; letter-spacing: 1px; text-transform: uppercase; }
+  .interconnected-banner { width: 100%; overflow: hidden; }
+  .interconnected-banner svg { width: 100%; display: block; }
+  @media (max-width: 768px) { .gcc-grid { grid-template-columns: 1fr; } .gcc-stat-row { grid-template-columns: repeat(2, 1fr); } }
+
+  .quote-section { background: linear-gradient(135deg, var(--olive) 0%, #4A6030 100%); max-width: 100%; padding: 6rem 2rem; text-align: center; position: relative; overflow: hidden; }
+  .quote-inner { max-width: 750px; margin: 0 auto; position: relative; z-index: 1; }
+  .quote-mark { font-family: 'Playfair Display', serif; font-size: 6rem; color: rgba(255,255,255,0.15); line-height: 1; margin-bottom: -2rem; }
+  .quote-text { font-family: 'Playfair Display', serif; font-size: clamp(1.4rem, 3vw, 2rem); color: #fff; line-height: 1.6; font-style: italic; }
+  .quote-attr { margin-top: 2rem; font-size: 0.9rem; color: rgba(255,255,255,0.6); font-weight: 300; }
+
+  .cta-section { text-align: center; padding: 8rem 2rem; background: var(--warm-white); }
+  .cta-section .section-title { max-width: 600px; margin: 0 auto 1.5rem; }
+  .cta-section .section-text { margin: 0 auto 2.5rem; }
+  .cta-btn { display: inline-block; padding: 1rem 2.5rem; background: var(--olive); color: #fff; font-family: 'DM Sans', sans-serif; font-size: 1rem; font-weight: 500; border: none; border-radius: 50px; text-decoration: none; letter-spacing: 0.5px; transition: all 0.3s; cursor: pointer; }
+  .cta-btn:hover { background: var(--olive-light); transform: translateY(-2px); box-shadow: 0 8px 25px rgba(107,124,62,0.3); }
+
+  footer { background: var(--night); color: rgba(255,255,255,0.4); text-align: center; padding: 3rem 2rem; font-size: 0.85rem; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+  @keyframes growBar { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  .reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.8s ease, transform 0.8s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .dove { position: absolute; font-size: 2rem; opacity: 0.15; animation: doveFloat 20s linear infinite; z-index: 1; }
+  .dove:nth-child(1) { top: 20%; left: -5%; animation-delay: 0s; animation-duration: 25s; }
+  .dove:nth-child(2) { top: 40%; left: -10%; animation-delay: 8s; animation-duration: 30s; font-size: 1.5rem; }
+  .dove:nth-child(3) { top: 60%; left: -8%; animation-delay: 15s; animation-duration: 22s; }
+  @keyframes doveFloat { 0% { transform: translateX(0); opacity: 0; } 10% { opacity: 0.2; } 90% { opacity: 0.2; } 100% { transform: translateX(110vw) translateY(-50px); opacity: 0; } }
+
+  @media (max-width: 768px) {
+    .contrast-grid { grid-template-columns: 1fr; }
+    .contrast-panel { padding: 3rem 2rem; }
+    .economy-grid { grid-template-columns: repeat(2, 1fr); }
+    .route-grid { grid-template-columns: 1fr; }
+    .stats-row { grid-template-columns: 1fr; }
+    section { padding: 4rem 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav id="navbar">
+  <a href="#" class="nav-logo">Tomorrow's Promise</a>
+  <ul class="nav-links">
+    <li><a href="#contrast">Today vs Tomorrow</a></li>
+    <li><a href="#timeline">Road to Peace</a></li>
+    <li><a href="#stories">Stories</a></li>
+    <li><a href="#connections">Connections</a></li>
+    <li><a href="#gcc">Middle East</a></li>
+    <li><a href="#economy">Prosperity</a></li>
+  </ul>
+</nav>
+
+<!-- HERO WITH JERUSALEM GOLDEN HOUR SCENE -->
+<section class="hero">
+  <div class="hero-bg">
+    <svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#1a1a3e"/><stop offset="25%" stop-color="#2d1b4e"/>
+          <stop offset="45%" stop-color="#8b3a62"/><stop offset="60%" stop-color="#d4704b"/>
+          <stop offset="75%" stop-color="#e8a84c"/><stop offset="100%" stop-color="#f5ecd8"/>
+        </linearGradient>
+        <radialGradient id="sun" cx="50%" cy="72%" r="15%">
+          <stop offset="0%" stop-color="#fff4d4"/><stop offset="100%" stop-color="#f0c040" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <rect width="1440" height="900" fill="url(#sky)"/>
+      <circle cx="720" cy="650" r="250" fill="url(#sun)"/>
+      <g opacity="0.6"><circle cx="200" cy="80" r="1.5" fill="#fff"/><circle cx="600" cy="60" r="1.2" fill="#fff"/><circle cx="900" cy="100" r="1.5" fill="#fff"/><circle cx="1100" cy="70" r="1" fill="#fff"/></g>
+      <path d="M0 680 Q200 640 400 660 Q600 630 800 655 Q1000 635 1200 650 Q1350 640 1440 660 L1440 900 L0 900Z" fill="#3a2815" opacity="0.5"/>
+      <!-- Jerusalem silhouette -->
+      <g fill="#2a1a0e">
+        <path d="M300 720 L300 680 L340 680 L340 660 L340 680 L520 680 L520 660 L520 680 L600 680 L600 650 L640 650 L640 680 L700 680 L700 720"/>
+        <ellipse cx="620" cy="615" rx="28" ry="12" fill="#c4953a" opacity="0.9"/>
+        <path d="M592 615 Q620 570 648 615" fill="#c4953a" opacity="0.9"/>
+        <circle cx="620" cy="580" r="3" fill="#e8c44a"/>
+        <path d="M700 720 L700 670 L740 670 L740 650 L730 640 L740 650 L740 670 L800 690 L800 660 L840 660 L840 640 L830 630 L840 640 L840 660 L900 680 L960 680 L960 700 L1000 720"/>
+        <rect x="830" y="610" width="4" height="25" fill="#2a1a0e"/>
+        <path d="M826 635 L832 608 L838 635" fill="#2a1a0e"/>
+        <path d="M100 720 L100 700 L200 680 L250 690 L250 670 L280 640 L290 650 L290 670 L300 670 L300 720"/>
+        <rect x="277" y="610" width="5" height="40" fill="#2a1a0e"/>
+        <path d="M1000 720 L1050 690 L1100 680 L1150 670 L1200 690 L1300 700 L1440 710 L1440 720"/>
+        <path d="M0 720 L0 710 L50 710 L100 710 L100 720"/>
+      </g>
+      <rect x="0" y="720" width="1440" height="180" fill="#1a1008"/>
+      <g fill="#f0c040" opacity="0.7">
+        <rect x="310" y="668" width="3" height="3" rx="0.5"/><rect x="380" y="688" width="3" height="3" rx="0.5"/>
+        <rect x="450" y="688" width="3" height="3" rx="0.5"/><rect x="710" y="678" width="3" height="3" rx="0.5"/>
+        <rect x="810" y="668" width="3" height="3" rx="0.5"/><rect x="910" y="658" width="3" height="3" rx="0.5"/>
+      </g>
+      <g opacity="0.6">
+        <ellipse cx="100" cy="760" rx="30" ry="20" fill="#2a3518"/><rect x="97" y="760" width="6" height="20" fill="#3a2515"/>
+        <ellipse cx="1350" cy="755" rx="25" ry="18" fill="#2a3518"/><rect x="1347" y="755" width="5" height="18" fill="#3a2515"/>
+      </g>
+    </svg>
+  </div>
+  <span class="dove">&#x1F54A;&#xFE0F;</span><span class="dove">&#x1F54A;&#xFE0F;</span><span class="dove">&#x1F54A;&#xFE0F;</span>
+  <div class="hero-content">
+    <p class="hero-date">A vision for 2035</p>
+    <h1>What if we chose <em>tomorrow</em> over yesterday?</h1>
+    <p class="hero-subtitle">An interactive visualization of the future we can build — where Israel and Palestine thrive side by side in peace, prosperity, and dignity.</p>
+    <a href="#contrast" class="scroll-cta">Begin the journey <span class="arrow">&#x2193;</span></a>
+  </div>
+</section>
+
+<!-- CONTRAST: TODAY VS TOMORROW -->
+<div class="contrast-section" id="contrast">
+  <div class="contrast-grid">
+    <div class="contrast-panel today reveal">
+      <div class="scene-container">
+        <svg viewBox="0 0 500 250" xmlns="http://www.w3.org/2000/svg">
+          <defs><linearGradient id="greysky" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#6b7080"/><stop offset="100%" stop-color="#9098a8"/></linearGradient></defs>
+          <rect width="500" height="250" fill="url(#greysky)"/>
+          <rect x="0" y="80" width="500" height="170" fill="#8a8a82"/>
+          <rect x="0" y="80" width="500" height="5" fill="#7a7a72"/>
+          <g stroke="#7a7a72" stroke-width="2"><line x1="80" y1="80" x2="80" y2="250"/><line x1="160" y1="80" x2="160" y2="250"/><line x1="240" y1="80" x2="240" y2="250"/><line x1="320" y1="80" x2="320" y2="250"/><line x1="400" y1="80" x2="400" y2="250"/></g>
+          <rect x="230" y="30" width="40" height="50" fill="#6a6a62"/><rect x="225" y="25" width="50" height="8" fill="#5a5a52"/>
+          <rect x="235" y="40" width="10" height="10" fill="#4a5060" opacity="0.5"/><rect x="255" y="40" width="10" height="10" fill="#4a5060" opacity="0.5"/>
+          <path d="M0 78 Q20 72 40 78 Q60 72 80 78 Q100 72 120 78 Q140 72 160 78 Q180 72 200 78 Q220 72 240 78 Q260 72 280 78 Q300 72 320 78 Q340 72 360 78 Q380 72 400 78 Q420 72 440 78 Q460 72 500 78" stroke="#555" stroke-width="1" fill="none" opacity="0.7"/>
+          <g opacity="0.6">
+            <circle cx="60" cy="185" r="5" fill="#5a5040"/><rect x="57" y="190" width="6" height="22" rx="2" fill="#4a4a4a"/>
+            <circle cx="100" cy="187" r="5" fill="#4a4040"/><rect x="97" y="192" width="6" height="22" rx="2" fill="#3a3a4a"/>
+            <circle cx="130" cy="194" r="4" fill="#5a4a40"/><rect x="128" y="198" width="5" height="18" rx="2" fill="#4a4040"/>
+          </g>
+        </svg>
+        <span class="scene-overlay-text">Present Day — Separation</span>
+      </div>
+      <p class="section-label">The Reality of Today</p>
+      <h2 class="section-title">A generation that has known only walls</h2>
+      <p class="section-text">Young Israelis and Palestinians have grown up behind barriers — physical and psychological. They've inherited fear, distrust, and a shrinking horizon.</p>
+      <div class="stats-row">
+        <div><div class="stat-number">70%</div><div class="stat-label">of young Israelis have never met a Palestinian peer</div></div>
+        <div><div class="stat-number">$20B+</div><div class="stat-label">annual regional cost of the conflict</div></div>
+      </div>
+    </div>
+    <div class="contrast-panel tomorrow reveal">
+      <div class="scene-container">
+        <svg viewBox="0 0 500 250" xmlns="http://www.w3.org/2000/svg">
+          <defs><linearGradient id="bluesky" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#4a9ac4"/><stop offset="100%" stop-color="#a8d8ea"/></linearGradient></defs>
+          <rect width="500" height="250" fill="url(#bluesky)"/>
+          <ellipse cx="100" cy="40" rx="50" ry="15" fill="#fff" opacity="0.6"/><ellipse cx="380" cy="55" rx="40" ry="12" fill="#fff" opacity="0.5"/>
+          <ellipse cx="250" cy="250" rx="400" ry="130" fill="#6a9040"/>
+          <g><rect x="78" y="145" width="4" height="25" fill="#5d4037"/><ellipse cx="80" cy="140" rx="18" ry="15" fill="#4a8030"/>
+          <rect x="398" y="150" width="4" height="22" fill="#5d4037"/><ellipse cx="400" cy="145" rx="16" ry="14" fill="#4a8030"/>
+          <rect x="308" y="148" width="4" height="22" fill="#5d4037"/><ellipse cx="310" cy="143" rx="15" ry="13" fill="#4a8030"/></g>
+          <path d="M180 250 Q220 200 250 190 Q280 200 320 250" fill="#d4c4a0" opacity="0.6"/>
+          <path d="M220 170 L220 140 Q250 120 280 140 L280 170" fill="none" stroke="#8a7040" stroke-width="3"/>
+          <text x="250" y="155" text-anchor="middle" font-size="6" fill="#6a5a3a" font-family="serif">PEACE PARK</text>
+          <g>
+            <circle cx="230" cy="185" r="4" fill="#c4946a"/><rect x="228" y="189" width="5" height="16" rx="2" fill="#4a7aaa"/>
+            <circle cx="240" cy="186" r="4" fill="#8a6a4a"/><rect x="238" y="190" width="5" height="15" rx="2" fill="#aa4a3a"/>
+            <circle cx="235" cy="195" r="3" fill="#c4946a"/><rect x="233.5" y="198" width="4" height="10" rx="1.5" fill="#e8a050"/>
+            <circle cx="265" cy="184" r="4" fill="#8a6a4a"/><rect x="263" y="188" width="5" height="16" rx="2" fill="#5a8a5a"/>
+          </g>
+          <g opacity="0.8">
+            <circle cx="140" cy="210" r="3" fill="#e07070"/><circle cx="160" cy="220" r="2.5" fill="#e0c040"/>
+            <circle cx="350" cy="215" r="3" fill="#e07070"/><circle cx="370" cy="208" r="2.5" fill="#7070e0"/>
+          </g>
+          <g fill="none" stroke="#334" stroke-width="1" opacity="0.4">
+            <path d="M200 50 Q205 45 210 50 Q215 45 220 50"/><path d="M300 35 Q304 31 308 35 Q312 31 316 35"/>
+          </g>
+        </svg>
+        <span class="scene-overlay-text">2035 — Shared Peace Park, Jerusalem Hills</span>
+      </div>
+      <p class="section-label">The Promise of Tomorrow</p>
+      <h2 class="section-title">A generation that will build bridges</h2>
+      <p class="section-text">Imagine redirecting that energy — from defense to development, from walls to corridors. A peaceful Palestinian state and a secure Israel create a regional engine of innovation and shared prosperity.</p>
+      <div class="stats-row">
+        <div><div class="stat-number">+174%</div><div class="stat-label">projected GDP growth for Palestine in first decade of statehood</div></div>
+        <div><div class="stat-number">5M+</div><div class="stat-label">new tourists annually to the shared Holy Land corridor</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- WIDE BANNER: TRAIN SCENE -->
+<div class="scene-banner reveal">
+  <svg viewBox="0 0 1440 400" xmlns="http://www.w3.org/2000/svg">
+    <defs><linearGradient id="bannerSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#5ba0c8"/><stop offset="100%" stop-color="#c8e0f0"/></linearGradient></defs>
+    <rect width="1440" height="400" fill="url(#bannerSky)"/>
+    <path d="M0 280 Q200 250 400 260 Q600 240 800 265 Q1000 245 1200 260 Q1350 250 1440 270 L1440 400 L0 400Z" fill="#8aa868" opacity="0.4"/>
+    <path d="M0 310 Q200 295 500 300 Q800 290 1100 300 Q1300 295 1440 305 L1440 400 L0 400Z" fill="#6a9040"/>
+    <rect x="0" y="330" width="1440" height="3" fill="#8a7a60"/><rect x="0" y="340" width="1440" height="3" fill="#8a7a60"/>
+    <g fill="#6a5a40" opacity="0.5"><rect x="50" y="328" width="4" height="18"/><rect x="100" y="328" width="4" height="18"/><rect x="150" y="328" width="4" height="18"/><rect x="200" y="328" width="4" height="18"/><rect x="250" y="328" width="4" height="18"/><rect x="300" y="328" width="4" height="18"/><rect x="350" y="328" width="4" height="18"/><rect x="400" y="328" width="4" height="18"/><rect x="450" y="328" width="4" height="18"/><rect x="500" y="328" width="4" height="18"/><rect x="550" y="328" width="4" height="18"/><rect x="600" y="328" width="4" height="18"/><rect x="650" y="328" width="4" height="18"/><rect x="700" y="328" width="4" height="18"/><rect x="750" y="328" width="4" height="18"/><rect x="800" y="328" width="4" height="18"/><rect x="850" y="328" width="4" height="18"/><rect x="900" y="328" width="4" height="18"/><rect x="950" y="328" width="4" height="18"/><rect x="1000" y="328" width="4" height="18"/><rect x="1050" y="328" width="4" height="18"/><rect x="1100" y="328" width="4" height="18"/><rect x="1150" y="328" width="4" height="18"/><rect x="1200" y="328" width="4" height="18"/><rect x="1250" y="328" width="4" height="18"/><rect x="1300" y="328" width="4" height="18"/><rect x="1350" y="328" width="4" height="18"/><rect x="1400" y="328" width="4" height="18"/></g>
+    <!-- Train -->
+    <rect x="550" y="295" width="340" height="38" rx="8" fill="#e0e0e8"/>
+    <path d="M890 295 Q920 295 920 314 Q920 333 890 333" fill="#d8d8e0"/>
+    <g fill="#4a8aaa" opacity="0.8"><rect x="570" y="302" width="20" height="14" rx="3"/><rect x="600" y="302" width="20" height="14" rx="3"/><rect x="630" y="302" width="20" height="14" rx="3"/><rect x="660" y="302" width="20" height="14" rx="3"/><rect x="690" y="302" width="20" height="14" rx="3"/><rect x="720" y="302" width="20" height="14" rx="3"/><rect x="750" y="302" width="20" height="14" rx="3"/><rect x="780" y="302" width="20" height="14" rx="3"/><rect x="810" y="302" width="20" height="14" rx="3"/><rect x="840" y="302" width="20" height="14" rx="3"/></g>
+    <rect x="550" y="325" width="340" height="4" fill="#4a8aaa"/>
+    <rect x="555" y="297" width="60" height="8" rx="2" fill="#2a3a4a"/>
+    <text x="585" y="303" text-anchor="middle" font-size="4.5" fill="#a0e0a0" font-family="sans-serif">TEL AVIV &#x2192; RAMALLAH</text>
+    <!-- Trees -->
+    <rect x="200" y="300" width="4" height="15" fill="#5d4037"/><ellipse cx="202" cy="295" rx="14" ry="11" fill="#5a8030"/>
+    <rect x="1200" y="298" width="4" height="16" fill="#5d4037"/><ellipse cx="1202" cy="293" rx="13" ry="10" fill="#5a8030"/>
+    <!-- City silhouettes -->
+    <g fill="#7a9a7a" opacity="0.3">
+      <rect x="80" y="230" width="15" height="50" rx="2"/><rect x="100" y="240" width="12" height="40" rx="2"/><rect x="120" y="220" width="10" height="60" rx="2"/>
+      <rect x="1260" y="235" width="12" height="45" rx="2"/><rect x="1280" y="225" width="10" height="55" rx="2"/><rect x="1295" y="240" width="14" height="40" rx="2"/>
+    </g>
+    <g font-family="sans-serif" font-size="7">
+      <rect x="85" y="277" width="30" height="10" rx="2" fill="#e8dcc8"/><text x="100" y="284" text-anchor="middle" fill="#4a3a2a">Tel Aviv</text>
+      <rect x="1282" y="275" width="35" height="10" rx="2" fill="#e8dcc8"/><text x="1300" y="282" text-anchor="middle" fill="#4a3a2a">Ramallah</text>
+    </g>
+  </svg>
+  <div class="banner-caption">
+    <h2>22 minutes. Two cities. One future.</h2>
+    <p>The Tel Aviv&#x2013;Ramallah Express, operational since 2031 <span style="opacity:0.5; font-size:0.7rem;">| Projected photograph, 2035</span></p>
+  </div>
+</div>
+
+<!-- TIMELINE -->
+<div class="timeline-section" id="timeline">
+  <div class="timeline-inner">
+    <p class="section-label">The Road Ahead</p>
+    <h2 class="section-title">How we get from here to there</h2>
+    <p class="section-text">A realistic pathway to peace — built on incremental trust, economic cooperation, and shared governance of sacred spaces.</p>
+    <div class="timeline">
+      <div class="timeline-item"><div class="timeline-dot">&#x1F91D;</div><div class="timeline-content">
+        <div class="timeline-year">YEAR 1 — AGREEMENT</div><h3>Mutual Recognition &amp; Framework</h3>
+        <p>Israel and Palestine formally recognize each other's sovereignty. International community provides security guarantees and economic development packages.</p>
+      </div></div>
+      <div class="timeline-item"><div class="timeline-dot">&#x1F3D7;&#xFE0F;</div><div class="timeline-content">
+        <div class="timeline-year">YEARS 2–3 — BUILDING</div><h3>Infrastructure &amp; Economic Corridors</h3>
+        <p>Construction begins on the Gaza-West Bank transit link. Joint industrial zones launch along the border. Tech incubators pair Israeli and Palestinian entrepreneurs.</p>
+      </div></div>
+      <div class="timeline-item"><div class="timeline-dot">&#x1F33F;</div><div class="timeline-content">
+        <div class="timeline-year">YEARS 3–5 — GROWING</div><h3>Open Borders &amp; Cultural Exchange</h3>
+        <p>Visa-free travel zones expand. Shared university programs enroll thousands. Joint environmental projects restore the Jordan River.</p>
+      </div></div>
+      <div class="timeline-item"><div class="timeline-dot">&#x2728;</div><div class="timeline-content">
+        <div class="timeline-year">YEARS 5–8 — FLOURISHING</div><h3>Regional Integration</h3>
+        <p>The Abraham Economic Zone connects Israel, Palestine, Jordan, and beyond. The region becomes a global hub for interfaith dialogue, agritech, and renewable energy.</p>
+      </div></div>
+      <div class="timeline-item"><div class="timeline-dot">&#x1F54A;&#xFE0F;</div><div class="timeline-content">
+        <div class="timeline-year">YEAR 10 — A NEW NORMAL</div><h3>A Generation That Only Knows Peace</h3>
+        <p>Children born the year of the agreement turn 10. They have Palestinian and Israeli friends. They've never seen a checkpoint.</p>
+        <div class="timeline-scene">
+          <svg viewBox="0 0 500 160" xmlns="http://www.w3.org/2000/svg">
+            <rect width="500" height="160" fill="#d4e8f0"/>
+            <ellipse cx="250" cy="155" rx="250" ry="40" fill="#7cb342"/>
+            <rect x="350" y="60" width="100" height="60" rx="4" fill="#f0e8d8"/>
+            <g fill="#88b8d0" opacity="0.5"><rect x="360" y="70" width="15" height="15" rx="2"/><rect x="385" y="70" width="15" height="15" rx="2"/><rect x="410" y="70" width="15" height="15" rx="2"/></g>
+            <rect x="355" y="48" width="90" height="10" rx="2" fill="#e8dcc8"/>
+            <text x="400" y="56" text-anchor="middle" font-size="5" fill="#4a3a2a" font-family="sans-serif" font-weight="bold">&#x05E9;&#x05DC;&#x05D5;&#x05DD; &#x2022; &#x0633;&#x0644;&#x0627;&#x0645; &#x2022; PEACE</text>
+            <g stroke="#e07050" stroke-width="3" fill="none"><path d="M100 90 Q130 50 160 90"/></g>
+            <line x1="115" y1="82" x2="115" y2="100" stroke="#888" stroke-width="1"/><rect x="112" y="100" width="6" height="2" fill="#5d4037"/>
+            <circle cx="115" cy="96" r="3.5" fill="#c4946a"/><rect x="113" y="99" width="4" height="6" rx="1" fill="#4a7ab8"/>
+            <circle cx="145" cy="91" r="3.5" fill="#8a6a4a"/><rect x="143" y="94" width="4" height="6" rx="1" fill="#aa3a3a"/>
+            <circle cx="220" cy="115" r="4" fill="#c4946a"/><rect x="218" y="119" width="5" height="10" rx="1.5" fill="#50a050"/>
+            <circle cx="240" cy="113" r="4" fill="#8a6a4a"/><rect x="238" y="117" width="5" height="10" rx="1.5" fill="#a050a0"/>
+            <circle cx="250" cy="128" r="4" fill="#e05050"/>
+            <circle cx="60" cy="30" r="20" fill="#f0d050" opacity="0.8"/>
+          </svg>
+        </div>
+      </div></div>
+    </div>
+  </div>
+</div>
+
+<!-- STORIES -->
+<section id="stories">
+  <p class="section-label reveal">Everyday Life in 2035</p>
+  <h2 class="section-title reveal">Stories from a peaceful future</h2>
+  <p class="section-text reveal">What does peace actually feel like? It's not a treaty on paper — it's the daily texture of life.</p>
+  <div class="stories-grid">
+    <div class="story-card reveal">
+      <div class="story-visual">
+        <svg viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg">
+          <defs><linearGradient id="seaSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#4a9ac4"/><stop offset="50%" stop-color="#e8a84c"/><stop offset="100%" stop-color="#f0d89c"/></linearGradient></defs>
+          <rect width="400" height="220" fill="url(#seaSky)"/>
+          <circle cx="300" cy="80" r="30" fill="#f0c040" opacity="0.9"/>
+          <path d="M0 130 Q100 125 200 130 Q300 135 400 130 L400 170 L0 170Z" fill="#3a8aaa"/>
+          <path d="M0 140 Q60 135 120 140 Q180 145 240 140 Q300 135 400 140" fill="none" stroke="#fff" stroke-width="1" opacity="0.4"/>
+          <path d="M0 165 Q200 155 400 165 L400 220 L0 220Z" fill="#e8c880"/>
+          <rect x="100" y="160" width="2" height="40" fill="#8a6a4a"/><path d="M70 160 Q100 140 130 160" fill="#e05050"/>
+          <circle cx="90" cy="185" r="4" fill="#c4946a"/><rect x="83" y="189" width="14" height="4" rx="2" fill="#4a7ab8"/>
+          <circle cx="115" cy="186" r="4" fill="#8a6a4a"/><rect x="108" y="190" width="14" height="4" rx="2" fill="#aa5030"/>
+          <circle cx="200" cy="192" r="3.5" fill="#c4946a"/><circle cx="215" cy="193" r="3" fill="#8a6a4a"/>
+          <path d="M203 200 L207 195 L211 200" fill="#e8c060"/><rect x="205" y="196" width="4" height="4" fill="#e8c060"/>
+          <path d="M320 110 L320 130 L340 130Z" fill="#fff" opacity="0.7"/>
+          <path d="M160 60 Q165 55 170 60 Q175 55 180 60" fill="none" stroke="#fff" stroke-width="1.5" opacity="0.5"/>
+        </svg>
+      </div>
+      <div class="story-body">
+        <p class="story-location">Gaza Waterfront</p>
+        <h3>The Beach That Changed Everything</h3>
+        <p>Families from Tel Aviv take the 45-minute train to Gaza's newly developed Mediterranean coast. The seafood restaurants are legendary. Israeli and Palestinian kids build sandcastles together.</p>
+      </div>
+    </div>
+    <div class="story-card reveal">
+      <div class="story-visual">
+        <svg viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg">
+          <rect width="400" height="220" fill="#1a2332"/>
+          <rect x="30" y="30" width="340" height="170" rx="8" fill="#2a3342"/>
+          <rect x="240" y="40" width="120" height="80" rx="4" fill="#4a6a8a"/>
+          <g fill="#5a7a9a"><rect x="270" y="60" width="8" height="40"/><rect x="285" y="50" width="10" height="50"/><rect x="300" y="65" width="7" height="35"/><rect x="315" y="55" width="9" height="45"/></g>
+          <rect x="50" y="130" width="180" height="6" rx="2" fill="#8a6a4a"/>
+          <rect x="80" y="90" width="50" height="35" rx="3" fill="#3a5a7a" opacity="0.8"/>
+          <g opacity="0.6"><rect x="85" y="96" width="25" height="2" fill="#6ac06a"/><rect x="85" y="101" width="35" height="2" fill="#60a0c0"/><rect x="85" y="106" width="20" height="2" fill="#e0a040"/></g>
+          <rect x="150" y="90" width="50" height="35" rx="3" fill="#3a5a7a" opacity="0.8"/>
+          <rect x="158" y="98" width="15" height="15" rx="2" fill="#e07070" opacity="0.5"/><circle cx="185" cy="105" r="6" fill="#70a0e0" opacity="0.5"/>
+          <circle cx="110" cy="115" r="6" fill="#c4946a"/><rect x="105" y="121" width="10" height="15" rx="3" fill="#3a5a8a"/>
+          <circle cx="180" cy="115" r="6" fill="#8a6a4a"/><rect x="175" y="121" width="10" height="15" rx="3" fill="#5a3a5a"/>
+          <circle cx="50" cy="50" r="12" fill="#3a5a3a" opacity="0.5"/>
+          <text x="50" y="53" text-anchor="middle" font-size="8" fill="#8ac08a" font-family="sans-serif" font-weight="bold">IL</text>
+          <text x="50" y="68" text-anchor="middle" font-size="5" fill="#8a9aaa" font-family="sans-serif">x PS</text>
+        </svg>
+      </div>
+      <div class="story-body">
+        <p class="story-location">Rawabi&#x2013;Herzliya Tech Corridor</p>
+        <h3>The Startup That Bridges Nations</h3>
+        <p>A Palestinian engineer from Rawabi and an Israeli designer from Herzliya co-founded a climate-tech company. Their desalination innovation now serves 12 countries.</p>
+      </div>
+    </div>
+    <div class="story-card reveal">
+      <div class="story-visual">
+        <svg viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg">
+          <defs><linearGradient id="jlmSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#6a90b8"/><stop offset="100%" stop-color="#c8d8e8"/></linearGradient></defs>
+          <rect width="400" height="220" fill="url(#jlmSky)"/>
+          <g fill="#e8d8b8"><rect x="50" y="90" width="60" height="80" rx="2"/><rect x="120" y="80" width="50" height="90" rx="2"/><rect x="180" y="85" width="55" height="85" rx="2"/><rect x="245" y="75" width="45" height="95" rx="2"/><rect x="300" y="90" width="60" height="80" rx="2"/></g>
+          <g fill="#8ab0c8" opacity="0.5"><rect x="60" y="100" width="8" height="10" rx="1"/><rect x="75" y="100" width="8" height="10" rx="1"/><rect x="130" y="90" width="8" height="10" rx="1"/><rect x="190" y="95" width="8" height="10" rx="1"/><rect x="255" y="85" width="8" height="10" rx="1"/><rect x="310" y="100" width="8" height="10" rx="1"/></g>
+          <path d="M245 75 Q267 45 290 75" fill="#c4953a"/><circle cx="267" cy="50" r="3" fill="#e8c44a"/>
+          <path d="M120 80 Q145 60 170 80" fill="#d8c8a8"/><rect x="143" y="55" width="3" height="10" fill="#8a7a60"/>
+          <rect x="0" y="170" width="400" height="50" fill="#c8b890"/>
+          <g><circle cx="160" cy="180" r="4" fill="#c4946a"/><rect x="158" y="184" width="5" height="12" rx="1.5" fill="#4a8a6a"/>
+          <circle cx="175" cy="181" r="4" fill="#8a6a4a"/><rect x="173" y="185" width="5" height="12" rx="1.5" fill="#6a4a6a"/>
+          <circle cx="167" cy="186" r="3" fill="#c4946a"/><rect x="165.5" y="189" width="4" height="8" rx="1" fill="#e0a040"/></g>
+          <rect x="130" y="72" width="140" height="12" rx="3" fill="rgba(255,255,255,0.85)"/>
+          <text x="200" y="81" text-anchor="middle" font-size="6" fill="#4a3a2a" font-family="serif" font-weight="bold">&#x05D9;&#x05E8;&#x05D5;&#x05E9;&#x05DC;&#x05D9;&#x05DD; &#x2022; &#x0627;&#x0644;&#x0642;&#x062F;&#x0633; &#x2022; JERUSALEM</text>
+        </svg>
+      </div>
+      <div class="story-body">
+        <p class="story-location">Jerusalem — Old City</p>
+        <h3>The City That Belongs to Everyone</h3>
+        <p>Under a special shared governance arrangement, Jerusalem's Old City is managed jointly. Pilgrims and tourists from all faiths walk freely. The muezzin's call and Shabbat candles coexist.</p>
+      </div>
+    </div>
+  </div>
+</section>
+      <div class="story-body">
+        <p class="story-location">Jerusalem — Old City</p>
+        <h3>The City That Belongs to Everyone</h3>
+        <p>Under a special shared governance arrangement, Jerusalem's Old City is managed jointly. Pilgrims and tourists from all faiths walk freely. The muezzin's call and Shabbat candles coexist as they always should have.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== MAP / CONNECTIONS ===== -->
+<div class="map-section" id="connections">
+  <div class="map-visual">
+    <p class="section-label" style="color: var(--gold);">Open Borders, Open Hearts</p>
+    <h2 class="section-title">A connected region</h2>
+    <p class="section-text">Imagine traveling freely across a region united by rail, trade, and shared dreams.</p>
+
+    <!-- Regional map SVG -->
+    <div class="map-svg-container">
+      <svg viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg">
+        <rect width="800" height="500" fill="#1a2838"/>
+        <!-- Mediterranean Sea -->
+        <path d="M0 0 L0 500 L200 500 Q180 400 160 300 Q150 200 170 100 Q180 50 200 0Z" fill="#1a3848" opacity="0.8"/>
+        <text x="80" y="250" text-anchor="middle" font-size="12" fill="#3a6878" font-family="serif" font-style="italic" transform="rotate(-90 80 250)">Mediterranean Sea</text>
+        <!-- Land mass -->
+        <path d="M200 0 L200 500 L800 500 L800 0Z" fill="#2a3848"/>
+        <!-- Country borders (subtle) -->
+        <path d="M200 0 Q250 80 260 160 Q270 240 280 320 Q290 400 300 500" stroke="#4a5868" stroke-width="1" fill="none" stroke-dasharray="4,4"/>
+        <!-- Jordan River -->
+        <path d="M350 0 Q340 80 345 160 Q350 240 340 320 Q335 400 330 500" stroke="#3a6878" stroke-width="2" fill="none"/>
+        <text x="365" y="200" font-size="8" fill="#4a7888" font-family="serif" font-style="italic" transform="rotate(-5 365 200)">Jordan River</text>
+        <!-- Cities - glowing dots -->
+        <!-- Tel Aviv -->
+        <circle cx="215" cy="230" r="8" fill="#4a9ac4" opacity="0.3"/>
+        <circle cx="215" cy="230" r="4" fill="#7ab8d4"/>
+        <text x="195" y="250" font-size="9" fill="#a0c8e0" font-family="sans-serif" text-anchor="end">Tel Aviv</text>
+        <!-- Jerusalem -->
+        <circle cx="270" cy="260" r="10" fill="#d4a843" opacity="0.3"/>
+        <circle cx="270" cy="260" r="5" fill="#e8c44a"/>
+        <text x="270" y="280" font-size="9" fill="#e8c44a" font-family="sans-serif" text-anchor="middle" font-weight="bold">Jerusalem</text>
+        <!-- Ramallah -->
+        <circle cx="265" cy="235" r="6" fill="#8ac08a" opacity="0.3"/>
+        <circle cx="265" cy="235" r="3" fill="#8ac08a"/>
+        <text x="285" y="238" font-size="8" fill="#8ac08a" font-family="sans-serif">Ramallah</text>
+        <!-- Gaza -->
+        <circle cx="210" cy="310" r="7" fill="#e07a5f" opacity="0.3"/>
+        <circle cx="210" cy="310" r="3.5" fill="#e07a5f"/>
+        <text x="190" y="325" font-size="8" fill="#e07a5f" font-family="sans-serif" text-anchor="end">Gaza</text>
+        <!-- Haifa -->
+        <circle cx="230" cy="140" r="6" fill="#7ab8d4" opacity="0.3"/>
+        <circle cx="230" cy="140" r="3" fill="#7ab8d4"/>
+        <text x="245" y="143" font-size="8" fill="#a0c8e0" font-family="sans-serif">Haifa</text>
+        <!-- Amman -->
+        <circle cx="420" cy="255" r="7" fill="#c09060" opacity="0.3"/>
+        <circle cx="420" cy="255" r="3.5" fill="#c09060"/>
+        <text x="435" y="258" font-size="8" fill="#c09060" font-family="sans-serif">Amman</text>
+        <!-- Jenin -->
+        <circle cx="260" cy="180" r="5" fill="#8ac08a" opacity="0.3"/>
+        <circle cx="260" cy="180" r="2.5" fill="#8ac08a"/>
+        <text x="275" y="183" font-size="7" fill="#8ac08a" font-family="sans-serif">Jenin</text>
+        <!-- Beirut -->
+        <circle cx="250" cy="50" r="6" fill="#a080c0" opacity="0.3"/>
+        <circle cx="250" cy="50" r="3" fill="#a080c0"/>
+        <text x="265" y="53" font-size="8" fill="#a080c0" font-family="sans-serif">Beirut</text>
+
+        <!-- Rail connections (animated dashed lines) -->
+        <g stroke="#e8c44a" stroke-width="1.5" fill="none" opacity="0.6" stroke-dasharray="8,4">
+          <!-- Tel Aviv - Ramallah -->
+          <path d="M219 230 Q240 232 261 235">
+            <animate attributeName="stroke-dashoffset" from="24" to="0" dur="2s" repeatCount="indefinite"/>
+          </path>
+          <!-- Tel Aviv - Jerusalem -->
+          <path d="M220 234 Q245 248 266 258">
+            <animate attributeName="stroke-dashoffset" from="24" to="0" dur="2s" repeatCount="indefinite"/>
+          </path>
+          <!-- Haifa - Jenin -->
+          <path d="M233 143 Q247 160 257 177">
+            <animate attributeName="stroke-dashoffset" from="24" to="0" dur="2s" repeatCount="indefinite"/>
+          </path>
+          <!-- Jerusalem - Amman -->
+          <path d="M275 260 Q340 258 416 255">
+            <animate attributeName="stroke-dashoffset" from="24" to="0" dur="2s" repeatCount="indefinite"/>
+          </path>
+          <!-- Tel Aviv - Gaza (coastal) -->
+          <path d="M213 234 Q208 270 210 306">
+            <animate attributeName="stroke-dashoffset" from="24" to="0" dur="2s" repeatCount="indefinite"/>
+          </path>
+          <!-- Haifa - Beirut -->
+          <path d="M234 137 Q242 90 248 54">
+            <animate attributeName="stroke-dashoffset" from="24" to="0" dur="2s" repeatCount="indefinite"/>
+          </path>
+        </g>
+
+        <!-- Legend -->
+        <g transform="translate(550, 350)">
+          <rect x="0" y="0" width="200" height="100" rx="8" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.1)"/>
+          <text x="15" y="20" font-size="8" fill="#a0a8b0" font-family="sans-serif" font-weight="bold" letter-spacing="2">RAIL NETWORK 2035</text>
+          <line x1="15" y1="40" x2="40" y2="40" stroke="#e8c44a" stroke-width="1.5" stroke-dasharray="8,4"/>
+          <text x="50" y="43" font-size="7" fill="#8a9aaa" font-family="sans-serif">High-speed rail</text>
+          <circle cx="22" cy="60" r="3" fill="#7ab8d4"/>
+          <text x="50" y="63" font-size="7" fill="#8a9aaa" font-family="sans-serif">Israeli cities</text>
+          <circle cx="22" cy="80" r="3" fill="#8ac08a"/>
+          <text x="50" y="83" font-size="7" fill="#8a9aaa" font-family="sans-serif">Palestinian cities</text>
+        </g>
+
+        <!-- Title -->
+        <text x="550" y="80" text-anchor="middle" font-size="16" fill="rgba(255,255,255,0.8)" font-family="serif">The Connected Holy Land</text>
+        <text x="550" y="100" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.4)" font-family="sans-serif">Regional rail network — connecting nations by 2035</text>
+      </svg>
+    </div>
+
+    <div class="route-grid">
+      <div class="route-card">
+        <div class="route-emoji">🚄</div>
+        <h4>Tel Aviv → Ramallah</h4>
+        <p>Direct express service through the shared economic zone</p>
+        <span class="route-time">22 MINUTES</span>
+      </div>
+      <div class="route-card">
+        <div class="route-emoji">🛫</div>
+        <h4>Gaza International Airport</h4>
+        <p>Palestine's gateway to the world — 40 destinations</p>
+        <span class="route-time">OPENED 2030</span>
+      </div>
+      <div class="route-card">
+        <div class="route-emoji">🚢</div>
+        <h4>Gaza–Haifa Ferry</h4>
+        <p>Scenic coastal route connecting Mediterranean ports</p>
+        <span class="route-time">2.5 HOURS</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== GCC INTERCONNECTION: THE CONNECTED MIDDLE EAST ===== -->
+<div class="gcc-section" id="gcc">
+  <!-- Photorealistic Dubai-Tel Aviv skyline panorama -->
+  <div class="gcc-hero-scene">
+    <svg viewBox="0 0 1440 500" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="gccSky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#0a1628"/>
+          <stop offset="40%" stop-color="#1a2848"/>
+          <stop offset="70%" stop-color="#2a4068"/>
+          <stop offset="100%" stop-color="#3a5888"/>
+        </linearGradient>
+        <linearGradient id="waterReflect" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#1a3050"/>
+          <stop offset="100%" stop-color="#0a1828"/>
+        </linearGradient>
+        <filter id="glow2"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <rect width="1440" height="500" fill="url(#gccSky)"/>
+      <!-- Stars -->
+      <g opacity="0.5"><circle cx="100" cy="30" r="1" fill="#fff"/><circle cx="300" cy="50" r="0.8" fill="#fff"/><circle cx="500" cy="20" r="1.2" fill="#fff"/><circle cx="700" cy="40" r="0.7" fill="#fff"/><circle cx="900" cy="25" r="1" fill="#fff"/><circle cx="1100" cy="45" r="0.9" fill="#fff"/><circle cx="1300" cy="35" r="1.1" fill="#fff"/></g>
+
+      <!-- LEFT: Tel Aviv skyline (warm lights) -->
+      <g>
+        <!-- Azrieli towers -->
+        <rect x="80" y="180" width="22" height="140" rx="2" fill="#1a2a40"/>
+        <rect x="80" y="180" width="22" height="140" fill="#2a3a50" opacity="0.5"/>
+        <g fill="#e8c44a" opacity="0.7"><rect x="84" y="190" width="4" height="3"/><rect x="92" y="190" width="4" height="3"/><rect x="84" y="200" width="4" height="3"/><rect x="92" y="200" width="4" height="3"/><rect x="84" y="210" width="4" height="3"/><rect x="92" y="210" width="4" height="3"/><rect x="84" y="220" width="4" height="3"/><rect x="84" y="230" width="4" height="3"/><rect x="92" y="240" width="4" height="3"/><rect x="84" y="250" width="4" height="3"/><rect x="92" y="260" width="4" height="3"/><rect x="84" y="270" width="4" height="3"/><rect x="92" y="280" width="4" height="3"/><rect x="84" y="290" width="4" height="3"/><rect x="92" y="300" width="4" height="3"/></g>
+        <!-- Round tower -->
+        <ellipse cx="120" cy="200" rx="12" ry="12" fill="#1a2a40"/>
+        <rect x="108" y="200" width="24" height="120" fill="#1a2a40"/>
+        <g fill="#e8c44a" opacity="0.6"><rect x="112" y="210" width="4" height="3"/><rect x="120" y="210" width="4" height="3"/><rect x="112" y="220" width="4" height="3"/><rect x="120" y="230" width="4" height="3"/><rect x="112" y="240" width="4" height="3"/><rect x="120" y="250" width="4" height="3"/><rect x="112" y="260" width="4" height="3"/><rect x="120" y="270" width="4" height="3"/><rect x="112" y="280" width="4" height="3"/></g>
+        <!-- More buildings -->
+        <rect x="145" y="220" width="18" height="100" rx="1" fill="#1a2a40"/>
+        <g fill="#88b8d0" opacity="0.4"><rect x="149" y="230" width="4" height="3"/><rect x="157" y="230" width="4" height="3"/><rect x="149" y="240" width="4" height="3"/><rect x="157" y="250" width="4" height="3"/><rect x="149" y="260" width="4" height="3"/><rect x="157" y="270" width="4" height="3"/></g>
+        <rect x="170" y="240" width="15" height="80" rx="1" fill="#1a2a40"/>
+        <rect x="190" y="260" width="12" height="60" rx="1" fill="#1a2a40"/>
+        <rect x="210" y="250" width="16" height="70" rx="1" fill="#1a2a40"/>
+        <rect x="50" y="250" width="20" height="70" rx="1" fill="#1a2a40"/>
+        <rect x="30" y="270" width="14" height="50" rx="1" fill="#1a2a40"/>
+        <!-- Label -->
+        <text x="130" y="170" text-anchor="middle" font-size="11" fill="#e8c44a" font-family="sans-serif" font-weight="bold" filter="url(#glow2)">TEL AVIV</text>
+      </g>
+
+      <!-- CENTER: Airplane connecting the cities -->
+      <g transform="translate(720, 120)">
+        <path d="M-8 0 L8 0 L4 -2 L8 -6 L2 -4 L0 -8 L-2 -4 L-8 -6 L-4 -2Z" fill="#fff" opacity="0.9"/>
+        <!-- Contrail -->
+        <line x1="-200" y1="40" x2="-8" y2="2" stroke="#fff" stroke-width="0.5" opacity="0.3" stroke-dasharray="4,4"/>
+        <line x1="8" y1="2" x2="200" y2="40" stroke="#fff" stroke-width="0.5" opacity="0.3" stroke-dasharray="4,4"/>
+      </g>
+      <text x="720" y="100" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.4)" font-family="sans-serif" letter-spacing="3">DIRECT FLIGHT — 3 HOURS</text>
+
+      <!-- RIGHT: Dubai/GCC skyline -->
+      <g>
+        <!-- Burj Khalifa -->
+        <path d="M1260 110 L1262 110 L1265 140 L1268 180 L1272 220 L1275 280 L1278 320 L1278 320 L1242 320 L1245 280 L1248 220 L1252 180 L1255 140 L1258 110Z" fill="#1a2a48"/>
+        <line x1="1260" y1="115" x2="1260" y2="108" stroke="#e8c44a" stroke-width="1"/>
+        <g fill="#e8c44a" opacity="0.5"><rect x="1255" y="150" width="2" height="2"/><rect x="1262" y="150" width="2" height="2"/><rect x="1255" y="170" width="2" height="2"/><rect x="1262" y="170" width="2" height="2"/><rect x="1253" y="190" width="2" height="2"/><rect x="1264" y="190" width="2" height="2"/><rect x="1252" y="210" width="2" height="2"/><rect x="1265" y="210" width="2" height="2"/><rect x="1250" y="240" width="3" height="2"/><rect x="1267" y="240" width="3" height="2"/><rect x="1248" y="270" width="3" height="2"/><rect x="1269" y="270" width="3" height="2"/><rect x="1246" y="300" width="3" height="2"/><rect x="1271" y="300" width="3" height="2"/></g>
+        <!-- Other Dubai buildings -->
+        <rect x="1290" y="200" width="25" height="120" rx="2" fill="#1a2a48"/>
+        <rect x="1290" y="195" width="25" height="8" rx="4" fill="#1a3050"/>
+        <rect x="1320" y="230" width="20" height="90" rx="1" fill="#1a2a48"/>
+        <rect x="1345" y="250" width="18" height="70" rx="1" fill="#1a2a48"/>
+        <rect x="1370" y="260" width="22" height="60" rx="1" fill="#1a2a48"/>
+        <rect x="1400" y="270" width="40" height="50" rx="1" fill="#1a2a48"/>
+        <!-- Sail building (Burj Al Arab shape) -->
+        <path d="M1210 240 Q1210 190 1230 180 L1235 240Z" fill="#1a2a48"/>
+        <path d="M1210 240 Q1210 190 1230 180" fill="none" stroke="#4a6a8a" stroke-width="1"/>
+        <rect x="1190" y="260" width="15" height="60" rx="1" fill="#1a2a48"/>
+        <rect x="1170" y="275" width="14" height="45" rx="1" fill="#1a2a48"/>
+        <!-- Windows -->
+        <g fill="#88d0e8" opacity="0.4"><rect x="1294" y="210" width="4" height="3"/><rect x="1306" y="210" width="4" height="3"/><rect x="1294" y="220" width="4" height="3"/><rect x="1294" y="240" width="4" height="3"/><rect x="1306" y="250" width="4" height="3"/><rect x="1324" y="240" width="4" height="3"/><rect x="1324" y="260" width="4" height="3"/><rect x="1349" y="260" width="4" height="3"/></g>
+        <!-- Label -->
+        <text x="1280" y="170" text-anchor="middle" font-size="11" fill="#88d0e8" font-family="sans-serif" font-weight="bold" filter="url(#glow2)">DUBAI</text>
+      </g>
+
+      <!-- Water/horizon -->
+      <rect x="0" y="320" width="1440" height="180" fill="url(#waterReflect)"/>
+      <!-- Water reflections -->
+      <g opacity="0.15">
+        <rect x="82" y="325" width="18" height="80" fill="#e8c44a"/>
+        <rect x="110" y="325" width="20" height="60" fill="#e8c44a"/>
+        <rect x="147" y="325" width="14" height="50" fill="#88b8d0"/>
+        <rect x="1255" y="325" width="10" height="100" fill="#e8c44a"/>
+        <rect x="1292" y="325" width="20" height="60" fill="#88d0e8"/>
+      </g>
+      <!-- Subtle wave lines -->
+      <g stroke="#3a5878" stroke-width="0.5" fill="none" opacity="0.3">
+        <path d="M0 340 Q100 338 200 340 Q300 342 400 340 Q500 338 600 340 Q700 342 800 340 Q900 338 1000 340 Q1100 342 1200 340 Q1300 338 1440 340"/>
+        <path d="M0 370 Q150 368 300 370 Q450 372 600 370 Q750 368 900 370 Q1050 372 1200 370 Q1350 368 1440 370"/>
+        <path d="M0 400 Q200 398 400 400 Q600 402 800 400 Q1000 398 1200 400 Q1350 402 1440 400"/>
+      </g>
+      <!-- Photo label -->
+      <text x="1420" y="490" text-anchor="end" font-size="6" fill="rgba(255,255,255,0.25)" font-family="sans-serif">Projected view, 2035 — Tel Aviv and Dubai connected by daily direct flights</text>
+    </svg>
+  </div>
+
+  <div class="gcc-inner">
+    <p class="section-label">The Wider Vision</p>
+    <h2 class="section-title" style="max-width:700px;">An interconnected Middle East:<br>From Abraham Accords to economic powerhouse</h2>
+    <p class="section-text">Israeli-Palestinian peace is the missing piece that transforms the Abraham Accords from bilateral deals into a regional economic revolution. A peaceful Palestine unlocks Saudi normalization, full GCC integration, and a $1 trillion Middle Eastern common market.</p>
+
+    <div class="gcc-grid">
+      <!-- Card 1: Riyadh-Tel Aviv corridor -->
+      <div class="gcc-card reveal">
+        <div class="gcc-card-visual">
+          <svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg">
+            <defs><linearGradient id="desertSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1a2040"/><stop offset="100%" stop-color="#4a3028"/></linearGradient></defs>
+            <rect width="400" height="180" fill="url(#desertSky)"/>
+            <!-- Desert dunes -->
+            <path d="M0 140 Q50 120 100 130 Q150 110 200 125 Q250 115 300 128 Q350 110 400 125 L400 180 L0 180Z" fill="#3a2818"/>
+            <path d="M0 150 Q80 135 160 142 Q240 130 320 140 Q370 135 400 138 L400 180 L0 180Z" fill="#4a3520"/>
+            <!-- Modern train on elevated track -->
+            <rect x="50" y="115" width="300" height="3" fill="#6a5a40"/>
+            <!-- Support pillars -->
+            <g fill="#5a4a30"><rect x="80" y="118" width="3" height="25"/><rect x="150" y="118" width="3" height="20"/><rect x="220" y="118" width="3" height="22"/><rect x="290" y="118" width="3" height="18"/></g>
+            <!-- High-speed train -->
+            <rect x="120" y="107" width="100" height="10" rx="5" fill="#e0e0e8"/>
+            <rect x="120" y="113" width="100" height="3" fill="#c4953a"/>
+            <path d="M220 107 Q235 107 235 112 Q235 117 220 117" fill="#d8d8e0"/>
+            <g fill="#4a7aaa" opacity="0.7"><rect x="130" y="109" width="10" height="5" rx="1"/><rect x="145" y="109" width="10" height="5" rx="1"/><rect x="160" y="109" width="10" height="5" rx="1"/><rect x="175" y="109" width="10" height="5" rx="1"/><rect x="190" y="109" width="10" height="5" rx="1"/><rect x="205" y="109" width="10" height="5" rx="1"/></g>
+            <!-- Riyadh skyline hint -->
+            <g fill="#2a2040" opacity="0.5"><rect x="330" y="90" width="8" height="40"/><rect x="342" y="100" width="10" height="30"/><rect x="356" y="95" width="7" height="35"/><rect x="368" y="105" width="12" height="25"/></g>
+            <text x="360" y="85" text-anchor="middle" font-size="7" fill="#c4953a" font-family="sans-serif" opacity="0.8">RIYADH</text>
+            <!-- Stars -->
+            <g fill="#fff" opacity="0.4"><circle cx="50" cy="20" r="0.8"/><circle cx="150" cy="15" r="0.6"/><circle cx="280" cy="25" r="0.7"/></g>
+            <text x="390" y="174" text-anchor="end" font-size="4" fill="rgba(255,255,255,0.3)" font-family="sans-serif">Projected: Riyadh-Tel Aviv HSR, 2037</text>
+          </svg>
+        </div>
+        <div class="gcc-card-body">
+          <h3>The Riyadh–Tel Aviv Corridor</h3>
+          <p>Saudi normalization — contingent on Palestinian statehood — opens a $800B bilateral trade corridor. High-speed rail through Jordan connects the region's two largest economies in under 4 hours.</p>
+        </div>
+      </div>
+
+      <!-- Card 2: Dubai tech hub -->
+      <div class="gcc-card reveal">
+        <div class="gcc-card-visual">
+          <svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg">
+            <rect width="400" height="180" fill="#0a1828"/>
+            <!-- Modern conference/expo hall -->
+            <path d="M50 130 Q200 80 350 130" fill="none" stroke="#2a4a6a" stroke-width="2"/>
+            <path d="M50 130 Q200 80 350 130 L350 160 L50 160Z" fill="#1a2a3a"/>
+            <!-- Glass facade reflections -->
+            <g fill="#2a5a7a" opacity="0.3"><rect x="70" y="115" width="15" height="40" rx="1"/><rect x="95" y="108" width="15" height="47" rx="1"/><rect x="120" y="100" width="15" height="55" rx="1"/><rect x="145" y="95" width="15" height="60" rx="1"/><rect x="170" y="92" width="15" height="63" rx="1"/><rect x="195" y="90" width="15" height="65" rx="1"/><rect x="220" y="92" width="15" height="63" rx="1"/><rect x="245" y="95" width="15" height="60" rx="1"/><rect x="270" y="100" width="15" height="55" rx="1"/><rect x="295" y="108" width="15" height="47" rx="1"/><rect x="320" y="115" width="15" height="40" rx="1"/></g>
+            <!-- Banner on building -->
+            <rect x="140" y="82" width="120" height="14" rx="3" fill="rgba(0,0,0,0.5)"/>
+            <text x="200" y="92" text-anchor="middle" font-size="6" fill="#e8c44a" font-family="sans-serif" font-weight="bold">MIDDLE EAST TECH SUMMIT 2035</text>
+            <!-- People entering -->
+            <g><circle cx="150" cy="148" r="3" fill="#c4946a"/><rect x="148.5" y="151" width="3" height="7" rx="1" fill="#2a3a5a"/>
+            <circle cx="165" cy="147" r="3" fill="#8a6a4a"/><rect x="163.5" y="150" width="3" height="7" rx="1" fill="#5a2a2a"/>
+            <circle cx="180" cy="149" r="3" fill="#c4946a"/><rect x="178.5" y="152" width="3" height="7" rx="1" fill="#2a5a3a"/>
+            <circle cx="220" cy="148" r="3" fill="#8a6a4a"/><rect x="218.5" y="151" width="3" height="7" rx="1" fill="#4a4a6a"/>
+            <circle cx="240" cy="147" r="3" fill="#c4946a"/><rect x="238.5" y="150" width="3" height="7" rx="1" fill="#6a3a4a"/></g>
+            <!-- Flags -->
+            <g><rect x="80" y="118" width="1.5" height="12" fill="#888"/>
+            <rect x="81.5" y="118" width="8" height="5" fill="#fff"/><rect x="81.5" y="118" width="8" height="1.7" fill="#1a8a1a"/><rect x="81.5" y="121.3" width="8" height="1.7" fill="#1a1a1a"/>
+            <rect x="310" y="118" width="1.5" height="12" fill="#888"/>
+            <rect x="311.5" y="118" width="8" height="5" fill="#fff"/><rect x="311.5" y="118" width="8" height="1.2" fill="#4a7ab8"/><rect x="311.5" y="121.8" width="8" height="1.2" fill="#4a7ab8"/>
+            </g>
+            <text x="390" y="174" text-anchor="end" font-size="4" fill="rgba(255,255,255,0.3)" font-family="sans-serif">Projected: Joint Innovation Expo, Dubai</text>
+          </svg>
+        </div>
+        <div class="gcc-card-body">
+          <h3>Innovation Without Borders</h3>
+          <p>Israeli AI and cybersecurity meets Gulf capital and scale. Joint tech accelerators in Dubai, Riyadh, and Ramallah create the world's newest innovation triangle — the "Silicon Crescent."</p>
+        </div>
+      </div>
+
+      <!-- Card 3: Red Sea resort -->
+      <div class="gcc-card reveal">
+        <div class="gcc-card-visual">
+          <svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg">
+            <defs><linearGradient id="tropicalSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2a5878"/><stop offset="100%" stop-color="#6aaac8"/></linearGradient></defs>
+            <rect width="400" height="180" fill="url(#tropicalSky)"/>
+            <!-- Sea -->
+            <rect x="0" y="100" width="400" height="40" fill="#2a7898"/>
+            <g stroke="#fff" stroke-width="0.5" opacity="0.2" fill="none"><path d="M0 110 Q50 108 100 110 Q150 112 200 110 Q250 108 300 110 Q350 112 400 110"/><path d="M0 120 Q60 118 120 120 Q180 122 240 120 Q300 118 360 120 Q380 122 400 120"/></g>
+            <!-- Beach -->
+            <path d="M0 138 Q100 132 200 135 Q300 130 400 135 L400 180 L0 180Z" fill="#e8c880"/>
+            <!-- Modern resort buildings -->
+            <g>
+              <rect x="50" y="80" width="40" height="55" rx="3" fill="rgba(255,255,255,0.15)"/>
+              <g fill="#fff" opacity="0.2"><rect x="55" y="86" width="8" height="6" rx="1"/><rect x="67" y="86" width="8" height="6" rx="1"/><rect x="55" y="96" width="8" height="6" rx="1"/><rect x="67" y="96" width="8" height="6" rx="1"/><rect x="55" y="106" width="8" height="6" rx="1"/><rect x="67" y="106" width="8" height="6" rx="1"/></g>
+              <rect x="280" y="75" width="50" height="60" rx="3" fill="rgba(255,255,255,0.12)"/>
+              <g fill="#fff" opacity="0.2"><rect x="286" y="82" width="8" height="6" rx="1"/><rect x="300" y="82" width="8" height="6" rx="1"/><rect x="314" y="82" width="8" height="6" rx="1"/><rect x="286" y="94" width="8" height="6" rx="1"/><rect x="300" y="94" width="8" height="6" rx="1"/></g>
+            </g>
+            <!-- Palm trees -->
+            <g><rect x="155" y="110" width="3" height="28" fill="#5d4037" transform="rotate(-5 156 124)"/>
+            <g fill="#2a7a40"><ellipse cx="145" cy="108" rx="15" ry="5" transform="rotate(-30 145 108)"/><ellipse cx="165" cy="106" rx="14" ry="5" transform="rotate(20 165 106)"/><ellipse cx="155" cy="104" rx="12" ry="5" transform="rotate(-10 155 104)"/></g></g>
+            <g><rect x="230" y="112" width="3" height="26" fill="#5d4037" transform="rotate(3 231 125)"/>
+            <g fill="#2a7a40"><ellipse cx="222" cy="110" rx="13" ry="4" transform="rotate(-25 222 110)"/><ellipse cx="240" cy="108" rx="12" ry="4" transform="rotate(25 240 108)"/></g></g>
+            <!-- Beach figures -->
+            <g><circle cx="130" cy="152" r="3" fill="#c4946a"/><circle cx="180" cy="154" r="3" fill="#8a6a4a"/><circle cx="200" cy="150" r="2.5" fill="#c4946a"/></g>
+            <!-- Yacht -->
+            <path d="M340 98 L340 108 L365 108Z" fill="#fff" opacity="0.6"/>
+            <path d="M335 110 L370 110 L355 114Z" fill="#d8d0c0"/>
+            <text x="200" y="68" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.6)" font-family="serif" font-style="italic">NEOM x Eilat Red Sea Riviera</text>
+            <text x="390" y="174" text-anchor="end" font-size="4" fill="rgba(255,255,255,0.3)" font-family="sans-serif">Projected: Joint tourism zone, Aqaba Gulf</text>
+          </svg>
+        </div>
+        <div class="gcc-card-body">
+          <h3>The Red Sea Riviera</h3>
+          <p>Saudi Arabia's NEOM and Israel's Eilat merge into a joint tourism mega-zone. Visa-free travel across the Gulf of Aqaba creates a $30B annual tourism corridor with Jordan and Egypt.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="gcc-stat-row reveal">
+      <div class="gcc-stat">
+        <div class="gcc-stat-val">$1T+</div>
+        <div class="gcc-stat-label">Projected regional GDP boost over 15 years</div>
+      </div>
+      <div class="gcc-stat">
+        <div class="gcc-stat-val">6</div>
+        <div class="gcc-stat-label">New normalization agreements unlocked by Palestinian peace</div>
+      </div>
+      <div class="gcc-stat">
+        <div class="gcc-stat-val">250M</div>
+        <div class="gcc-stat-label">People connected in a Middle Eastern common market</div>
+      </div>
+      <div class="gcc-stat">
+        <div class="gcc-stat-val">40%</div>
+        <div class="gcc-stat-label">Reduction in regional defense spending redirected to development</div>
+      </div>
+    </div>
+
+    <!-- Additional context text -->
+    <div style="margin-top: 3rem; max-width: 700px;">
+      <p style="font-size: 1rem; line-height: 1.8; color: rgba(255,255,255,0.55); font-weight: 300;">
+        The Abraham Accords with the UAE and Bahrain proved the appetite for normalization exists. But Saudi Arabia — the region's largest economy — has been clear: full normalization requires a credible path to Palestinian statehood. Once achieved, the domino effect transforms the entire region. Energy partnerships, tech corridors, shared water infrastructure, tourism circuits, and a unified economic zone from the Mediterranean to the Persian Gulf become not just possible — but inevitable.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ECONOMY ===== -->
+<div class="economy-section" id="economy">
+  <div class="economy-inner">
+    <p class="section-label reveal">The Peace Dividend</p>
+    <h2 class="section-title reveal">What prosperity looks like</h2>
+    <p class="section-text reveal">Peace isn't just the absence of war — it's the presence of opportunity. Here's what economic models project for the first decade of peace.</p>
+
+    <div class="economy-grid">
+      <div class="econ-card reveal">
+        <div class="econ-icon">📈</div>
+        <div class="econ-value">$150B</div>
+        <div class="econ-label">Combined GDP growth for both nations over 10 years</div>
+        <div class="econ-bar"><div class="econ-bar-fill"></div></div>
+      </div>
+      <div class="econ-card reveal">
+        <div class="econ-icon">👩‍💻</div>
+        <div class="econ-value">800K</div>
+        <div class="econ-label">New jobs created across the region</div>
+        <div class="econ-bar"><div class="econ-bar-fill"></div></div>
+      </div>
+      <div class="econ-card reveal">
+        <div class="econ-icon">🌍</div>
+        <div class="econ-value">12M</div>
+        <div class="econ-label">Annual tourists to the Holy Land peace corridor</div>
+        <div class="econ-bar"><div class="econ-bar-fill"></div></div>
+      </div>
+      <div class="econ-card reveal">
+        <div class="econ-icon">💧</div>
+        <div class="econ-value">100%</div>
+        <div class="econ-label">Water security through shared desalination</div>
+        <div class="econ-bar"><div class="econ-bar-fill"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== QUOTE ===== -->
+<div class="quote-section">
+  <div class="quote-inner reveal">
+    <div class="quote-mark">"</div>
+    <p class="quote-text">
+      You don't make peace with friends. You make peace with very unsavory enemies.
+    </p>
+    <p class="quote-attr">— Yitzhak Rabin</p>
+  </div>
+</div>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="reveal">
+    <p class="section-label">Be Part of the Future</p>
+    <h2 class="section-title">This future doesn't build itself. It starts with imagining it.</h2>
+    <p class="section-text">Share this vision. Talk about it. Demand it. The generation that only knows conflict deserves the chance to know peace.</p>
+    <button class="cta-btn" onclick="shareVision()">Share This Vision 🕊️</button>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p><strong style="color: rgba(255,255,255,0.7);">Tomorrow's Promise</strong> — An open-source visualization project</p>
+  <p style="margin-top: 0.5rem;">Built with hope. Data projections based on RAND Corporation, World Bank, and IMF peace economy studies.</p>
+  <p style="margin-top: 1rem;">Made with 🕊️ for those who believe in a better future</p>
+</footer>
+
+<script>
+  const nav = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 50);
+  });
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  function shareVision() {
+    if (navigator.share) {
+      navigator.share({
+        title: "Tomorrow's Promise — Imagining Peace",
+        text: "What if Israel and Palestine could thrive side by side? Explore this vision of a peaceful future.",
+        url: window.location.href
+      });
+    } else {
+      const text = "What if Israel and Palestine could thrive side by side? Explore this vision of a peaceful future. #TomorrowsPromise";
+      window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, '_blank');
+    }
+  }
+</script>
+
+</body>
+</html>
